@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .card__box {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1%;
+      }
+      .card {
+        width: 12.5%;
+        height: 200px;
+        border: 1px solid black;
+      }
+      .total {
+        color: red;
+        position: fixed;
+        border: 2px solid black;
+        top: 0;
+        right: 0;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="basket.html">basket</a></li>
+        <li><a href="wishlist.html">wishlist</a></li>
+      </ul>
+    </nav>
+    <div class="card__box"></div>
+
+    <script>
+      const total = document.querySelector(".total");
+      const card__box = document.querySelector(".card__box");
+
+      let basket_arr = [];
+      let wishlist_arr = [];
+      fetch("https://northwind.vercel.app/api/products")
+        .then((res) => res.json())
+        .then((data) => {
+          data.forEach((element) => {
+            createCard(element);
+          });
+        });
+      // eger data varsa localstorage
+      window.onload = function () {
+        if (localStorage.getItem("basket") !== null) {
+          basket_arr = JSON.parse(localStorage.getItem("basket"));
+        }
+        if (localStorage.getItem("wishlist") !== null) {
+          wishlist_arr = JSON.parse(localStorage.getItem("wishlist"));
+        }
+      };
+
+      function createCard(data) {
+        const div = document.createElement("div");
+        const h3 = document.createElement("h3");
+        const p = document.createElement("p");
+        const basket_btn = document.createElement("button");
+        const wishlist_btn = document.createElement("button");
+
+        div.classList.add("card");
+
+        h3.innerText = data.name;
+        p.innerText = data.unitPrice;
+
+        basket_btn.innerText = "add basket";
+        wishlist_btn.innerText = "add wishlist";
+        if (wishlist_arr.find((x) => x.id == data.id) !== undefined) {
+          wishlist_btn.style.backgroundColor = "red";
+        }
+        // basket
+        basket_btn.onclick = function () {
+          //eger bu idli elemnent yoxdursa push et
+          if (basket_arr.find((x) => x.id == data.id) === undefined) {
+            basket_arr.push({ ...data, count: 1 });
+          }
+          localStorage.setItem("basket", JSON.stringify(basket_arr));
+        };
+        // wishlist
+
+        wishlist_btn.onclick = () => {
+          if (wishlist_arr.find((x) => x.id == data.id) === undefined) {
+            wishlist_arr.push(data);
+            wishlist_btn.style.backgroundColor = "red";
+          } else {
+            wishlist_arr = wishlist_arr.filter((x) => x.id !== data.id);
+            wishlist_btn.style.backgroundColor = "white";
+          }
+          localStorage.setItem("wishlist", JSON.stringify(wishlist_arr));
+        };
+        div.append(h3, p, basket_btn, wishlist_btn);
+        card__box.appendChild(div);
+      }
+    </script>
+  </body>
+</html>

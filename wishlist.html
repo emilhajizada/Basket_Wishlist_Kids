@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wishlist</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="index.html">home</a></li>
+        <li><a href="basket.html">basket</a></li>
+        <li><a href="wishlist.html">wishlist</a></li>
+      </ul>
+    </nav>
+    <div id="wishlist_container">
+      <div class="basket_item"></div>
+    </div>
+    <script>
+      const wishlist_container = document.getElementById("wishlist_container");
+      let wishlist_arr = [];
+      wishlist_arr = JSON.parse(localStorage.getItem("wishlist"));
+
+      wishlist_arr.forEach((element) => {
+        const div = document.createElement("div");
+        const h1 = document.createElement("h1");
+        const btn = document.createElement("button");
+
+        div.style.border = "1px solid black";
+
+        h1.innerHTML = element.name;
+        btn.innerHTML = "remove";
+
+        btn.onclick = () => {
+          console.log(element.id);
+          wishlist_arr = wishlist_arr.filter((x) => x.id !== element.id);
+          localStorage.setItem("wishlist", JSON.stringify(wishlist_arr));
+          btn.parentElement.remove();
+        };
+
+        div.append(h1, btn);
+        wishlist_container.append(div);
+      });
+    </script>
+  </body>
+</html>
